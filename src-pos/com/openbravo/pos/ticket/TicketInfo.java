@@ -527,8 +527,15 @@ public class TicketInfo implements SerializableRead, Externalizable {
      *
      * @return
      */
-    public double getTotal() {
-        return getSubTotal() + getTax();
+    public double getTotal(boolean taxes) {
+        if(taxes){
+            return getSubTotal() + getTax();
+        } 
+        return getSubTotal();
+    }
+    
+    public double getTotalMajor() {
+        return getSubTotal();
     }
     
     /**
@@ -777,8 +784,8 @@ public class TicketInfo implements SerializableRead, Externalizable {
      *
      * @return
      */
-    public String printTotal() {
-        return Formats.CURRENCY.formatValue(getTotal());
+    public String printTotal(boolean taxes) {
+        return Formats.CURRENCY.formatValue(getTotal(taxes));
     }
 
     /**
@@ -801,8 +808,8 @@ public class TicketInfo implements SerializableRead, Externalizable {
      *
      * @return
      */
-    public String VoucherReturned(){
-        return Formats.CURRENCY.formatValue(getTotalPaid()- getTotal());
+    public String VoucherReturned(boolean taxes){
+        return Formats.CURRENCY.formatValue(getTotalPaid()- getTotal(taxes));
     }
 //Added JDl 03.07.13
 

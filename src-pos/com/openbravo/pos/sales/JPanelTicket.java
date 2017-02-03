@@ -179,7 +179,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private RestaurantDBUtils restDB;
     private KitchenDisplay kitchenDisplay;
     private String ticketPrintType;
-    
+    private Boolean checkMajor = false;
+
 // added 25.05.13 JDl warranty receipt
     private Boolean warrantyPrint=false;
 //   private String loyaltyCardNumber=null;
@@ -573,7 +574,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } else {
             m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
             m_jTaxesEuros.setText(m_oTicket.printTax());
-            m_jTotalEuros.setText(m_oTicket.printTotal());
+            m_jTotalEuros.setText(m_oTicket.printTotal(true));
         }
     }
     
@@ -871,7 +872,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     
     @SuppressWarnings("empty-statement")
     private void stateTransition(char cTrans) {
-
+        
         if ((cTrans == '\n') || (cTrans == '?')) {
             // Codigo de barras introducido
             if (m_sBarcode.length() > 0) { 
@@ -881,7 +882,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
  //               if ((sCode.length() > 10) && priceWith00) {
  //                   sCode = sCode.replace(".","");
  //                   }
+                System.out.println("Key pressed " + cTrans);
                 if (sCode.startsWith("c")) {
+                    System.out.println("Strat C");
+                    
                     // barcode of a customers card
                     try {
                         CustomerInfoExt newcustomer = dlSales.findCustomerExt(sCode);
@@ -898,7 +902,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     }
                     stateToZero();
                 } else if (sCode.startsWith(";")){
-                                                        
+                        System.out.println("Strat ;");                                
                    
                    stateToZero();
                 /*  commented out by janar153 @ 24.12.2013 to add scale barcode support  
@@ -1263,8 +1267,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // Totals() Igual;
             } else if (cTrans == ' ' || cTrans == '=') {
                 if (m_oTicket.getLinesCount() > 0) {
-                    
+                       System.out.println("Mayor a cero...");
                     if (closeTicket(m_oTicket, m_oTicketExt)) {
+                        System.out.println("m_oTicket");
                         // Ends edition of current receipt
                         m_ticketsbag.deleteTicket();  
                         
@@ -1274,6 +1279,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 if (autoLogoff.equals("true")){                    
                    if ("restaurant".equals(m_App.getProperties().getProperty("machine.ticketsbag"))&&
                            ("true".equals(m_App.getProperties().getProperty("till.autoLogoffrestaurant")))){
+                       
                         deactivate();
                         setActiveTicket(null, null); 
                    }else {
@@ -1283,9 +1289,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             };                       
                     } else {
                         // repaint current ticket
+                        System.out.println("RefreshTicket");
                         refreshTicket();
                     }
                 } else {
+                    System.out.println("No hay nada que hacer");
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
@@ -1293,6 +1301,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
     
     private boolean closeTicket(TicketInfo ticket, Object ticketext) {
+        System.out.println("Close Ticket");
         if (listener  != null) {
             listener.stop();
         }
@@ -1305,7 +1314,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             try {
                 // reset the payment info
                 taxeslogic.calculateTaxes(ticket);
-                if (ticket.getTotal()>=0.0){
+                System.out.println("Total: " + ticket.getTotal(checkMajor));
+                
+                
+                
+                if (ticket.getTotal(checkMajor)>=0.0){
                     ticket.resetPayments(); //Only reset if is sale
                 }
                 
@@ -1325,7 +1338,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
                     paymentdialog.setTransactionID(ticket.getTransactionID());
 
-                    if (paymentdialog.showDialog(ticket.getTotal(), ticket.getCustomer())) {
+                    if (paymentdialog.showDialog(ticket.getTotal(checkMajor), ticket.getCustomer())) {
 
                         // assign the payments selected and calculate taxes.         
                         ticket.setPayments(paymentdialog.getSelectedPayments());
@@ -1807,8 +1820,9 @@ if (pickupSize!=null && (Integer.parseInt(pickupSize) >= tmpPickupId.length())){
         m_jDown = new javax.swing.JButton();
         m_jDelete = new javax.swing.JButton();
         m_jList = new javax.swing.JButton();
-        m_jEditLine = new javax.swing.JButton();
         jEditAttributes = new javax.swing.JButton();
+        m_jEditLine = new javax.swing.JButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
         m_jPanelCentral = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jTicketId = new javax.swing.JLabel();
@@ -2047,6 +2061,22 @@ if (pickupSize!=null && (Integer.parseInt(pickupSize) >= tmpPickupId.length())){
         });
         jPanel2.add(m_jList);
 
+        jEditAttributes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/attributes.png"))); // NOI18N
+        jEditAttributes.setToolTipText("Choose Attributes");
+        jEditAttributes.setFocusPainted(false);
+        jEditAttributes.setFocusable(false);
+        jEditAttributes.setMargin(new java.awt.Insets(8, 14, 8, 14));
+        jEditAttributes.setMaximumSize(new java.awt.Dimension(42, 36));
+        jEditAttributes.setMinimumSize(new java.awt.Dimension(42, 36));
+        jEditAttributes.setPreferredSize(new java.awt.Dimension(50, 36));
+        jEditAttributes.setRequestFocusEnabled(false);
+        jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jEditAttributesActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jEditAttributes);
+
         m_jEditLine.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/sale_editline.png"))); // NOI18N
         m_jEditLine.setToolTipText("Edit Line");
         m_jEditLine.setFocusPainted(false);
@@ -2063,21 +2093,13 @@ if (pickupSize!=null && (Integer.parseInt(pickupSize) >= tmpPickupId.length())){
         });
         jPanel2.add(m_jEditLine);
 
-        jEditAttributes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/attributes.png"))); // NOI18N
-        jEditAttributes.setToolTipText("Choose Attributes");
-        jEditAttributes.setFocusPainted(false);
-        jEditAttributes.setFocusable(false);
-        jEditAttributes.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        jEditAttributes.setMaximumSize(new java.awt.Dimension(42, 36));
-        jEditAttributes.setMinimumSize(new java.awt.Dimension(42, 36));
-        jEditAttributes.setPreferredSize(new java.awt.Dimension(50, 36));
-        jEditAttributes.setRequestFocusEnabled(false);
-        jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
+        jCheckBox1.setText("Min");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jEditAttributesActionPerformed(evt);
+                jCheckBox1ActionPerformed(evt);
             }
         });
-        jPanel2.add(jEditAttributes);
+        jPanel2.add(jCheckBox1);
 
         jPanel5.add(jPanel2, java.awt.BorderLayout.NORTH);
 
@@ -2313,7 +2335,7 @@ if (pickupSize!=null && (Integer.parseInt(pickupSize) >= tmpPickupId.length())){
     }//GEN-LAST:event_m_jEditLineActionPerformed
 
     private void m_jEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jEnterActionPerformed
-
+       
         stateTransition('\n');
 
     }//GEN-LAST:event_m_jEnterActionPerformed
@@ -2508,12 +2530,19 @@ m_App.getAppUserView().showTask("com.openbravo.pos.customers.CustomersPanel");
 
     }//GEN-LAST:event_j_btnKitchenPrtActionPerformed
 
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        
+        checkMajor = !checkMajor;
+        System.out.println("check..." + checkMajor );
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCustomer;
     private javax.swing.JButton btnSplit;
     private javax.swing.JPanel catcontainer;
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

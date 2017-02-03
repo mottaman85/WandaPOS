@@ -37,6 +37,7 @@ import java.util.UUID;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.apache.velocity.exception.ParseErrorException;
 
 /**
  *
@@ -135,6 +136,7 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
         
         FieldsManager fm = new FieldsManager();
         m_jPriceBuy.getDocument().addDocumentListener(fm);
+        m_jfieldMajorPercent.getDocument().addDocumentListener(fm);
         m_jPriceSell.getDocument().addDocumentListener(new PriceSellManager());
         m_jTax.addActionListener(fm);
 
@@ -683,15 +685,36 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
     }
     
     private void calculateMargin() {
-
+        
+        if(m_jfieldMinoPercent == null)
+            m_jfieldMinoPercent.setText("0");
+        
+        if(m_jfieldMajorPercent.getText().isEmpty())
+            m_jfieldMajorPercent.setText("0");
+        
         if (!reportlock) {
             reportlock = true;
 
             Double dPriceBuy = readCurrency(m_jPriceBuy.getText());
             Double dPriceSell = (Double) pricesell;
-
+            try{
+            Double minor = Double.parseDouble(m_jfieldMinoPercent.getText());
+            Double major = Double.parseDouble(m_jfieldMajorPercent.getText());
+            if(dPriceBuy != null){
+                System.out.println(major + " Percent minor = " + (major/100));
+                dPriceSell = dPriceBuy + (dPriceBuy * (major/100));
+                m_jPriceSell.setText(dPriceSell.toString());
+                Double priceTax = dPriceBuy + (dPriceBuy * (minor/100));
+                m_jPriceSellTax.setText(priceTax.toString());
+            }
+                System.out.println("Calculate MArgin: " + dPriceBuy + " : " + dPriceSell);
+            }catch(java.lang.NumberFormatException e){
+                System.out.println("Error al parsear");
+            }
+             
             if (dPriceBuy == null || dPriceSell == null) {
                 m_jmargin.setText(null);
+                
             } else {
                 m_jmargin.setText(Formats.PERCENT.formatValue(new Double(dPriceSell.doubleValue() / dPriceBuy.doubleValue() - 1.0)));
             }
@@ -704,7 +727,7 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
         if (!reportlock) {
             reportlock = true;
 
-            Double dPriceSell = (Double) pricesell;
+            Double dPriceSell = readCurrency(m_jPriceBuy.getText());
 
             if (dPriceSell == null) {
                 m_jPriceSellTax.setText(null);
@@ -946,6 +969,10 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
         m_jCheckWarrantyReceipt = new javax.swing.JCheckBox();
         m_jGrossProfit = new javax.swing.JTextField();
         jLabel22 = new javax.swing.JLabel();
+        m_jfieldMajorPercent = new javax.swing.JTextField();
+        m_jfieldMinoPercent = new javax.swing.JTextField();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         m_jstockcost = new javax.swing.JTextField();
@@ -1114,7 +1141,7 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
 
         m_jmargin.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         m_jmargin.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        m_jmargin.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        m_jmargin.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         m_jmargin.setEnabled(false);
         jPanel1.add(m_jmargin);
         m_jmargin.setBounds(460, 190, 70, 25);
@@ -1157,7 +1184,7 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
             }
         });
         jPanel1.add(m_jCheckWarrantyReceipt);
-        m_jCheckWarrantyReceipt.setBounds(130, 290, 310, 23);
+        m_jCheckWarrantyReceipt.setBounds(10, 320, 310, 23);
 
         m_jGrossProfit.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         m_jGrossProfit.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
@@ -1171,6 +1198,27 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
         jLabel22.setText(bundle.getString("label.grossprofit")); // NOI18N
         jPanel1.add(jLabel22);
         jLabel22.setBounds(370, 220, 90, 20);
+
+        m_jfieldMajorPercent.setText("40");
+        m_jfieldMajorPercent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jfieldMajorPercentActionPerformed(evt);
+            }
+        });
+        jPanel1.add(m_jfieldMajorPercent);
+        m_jfieldMajorPercent.setBounds(320, 290, 100, 20);
+
+        m_jfieldMinoPercent.setText("110");
+        jPanel1.add(m_jfieldMinoPercent);
+        m_jfieldMinoPercent.setBounds(130, 290, 100, 20);
+
+        jLabel33.setText(" % Mayoreo");
+        jPanel1.add(jLabel33);
+        jLabel33.setBounds(240, 290, 90, 14);
+
+        jLabel34.setText("%Menudeo");
+        jPanel1.add(jLabel34);
+        jLabel34.setBounds(10, 290, 90, 14);
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodgeneral"), jPanel1); // NOI18N
 
@@ -1472,7 +1520,15 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
 
     private void m_jCodetypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jCodetypeActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_m_jCodetypeActionPerformed
+
+    private void m_jfieldMajorPercentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jfieldMajorPercentActionPerformed
+        // TODO add your handling code here:
+        
+        calculateMargin();
+        
+    }//GEN-LAST:event_m_jfieldMajorPercentActionPerformed
 
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1503,6 +1559,8 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1542,6 +1600,8 @@ public final class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JLabel m_jTitle;
     private javax.swing.JCheckBox m_jVerpatrib;
     private javax.swing.JCheckBox m_jVprice;
+    private javax.swing.JTextField m_jfieldMajorPercent;
+    private javax.swing.JTextField m_jfieldMinoPercent;
     private javax.swing.JTextField m_jmargin;
     private javax.swing.JTextField m_jstockcost;
     private javax.swing.JTextField m_jstockvolume;

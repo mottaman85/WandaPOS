@@ -3,13 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/data/DataLogicWebService.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-pos/com/openbravo/pos/forms/JRootFrame.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/data/AbstractWebService.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/implementation/ModelWebService.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/model/ModelCRUDRequest.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/apache/tomcat/TomcatEmbeddedServer.java</file>
-            <file>file:/D:/IT%20Kamer/IT-Kamer%20Project/Wanda-POS/src-webservices/cm/wandapos/webservices/interfaces/IModelWebService.java</file>
+            <file>file:/Users/mottaman/PROJECTS/WandaPOS/src-pos/com/openbravo/pos/sales/JPanelTicket.java</file>
+            <file>file:/Users/mottaman/PROJECTS/WandaPOS/src-pos/com/openbravo/pos/payment/JPaymentCheque.java</file>
+            <file>file:/Users/mottaman/PROJECTS/WandaPOS/src-pos/com/openbravo/pos/payment/JPaymentFree.java</file>
+            <file>file:/Users/mottaman/PROJECTS/WandaPOS/src-pos/com/openbravo/pos/payment/JPaymentDebt.java</file>
         </group>
     </open-files>
 </project-private>

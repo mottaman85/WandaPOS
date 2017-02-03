@@ -115,6 +115,7 @@ public class TaxesLogic {
         List<TicketTaxInfo> tickettaxes = new ArrayList<>(); 
         
         for (TicketLineInfo line: ticket.getLines()) {
+            System.out.println(line.getPrice());
             tickettaxes = sumLineTaxes(tickettaxes, calculateTaxes(line));
         }
         

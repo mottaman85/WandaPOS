@@ -142,6 +142,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         m_jMoneyEuros = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -181,6 +182,9 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         m_jMoneyEuros.setBounds(120, 4, 180, 30);
 
         add(jPanel4, java.awt.BorderLayout.CENTER);
+
+        jTextField1.setText("jTextField1");
+        add(jTextField1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
     
     
@@ -190,6 +194,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JTextField jTextField1;
     private com.openbravo.editor.JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
     private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
